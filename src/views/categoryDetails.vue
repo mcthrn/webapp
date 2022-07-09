@@ -39,6 +39,13 @@ export default {
       createdby: [],
     };
   },
+
+  name: "",
+  sku: "",
+  desc: "",
+  cost: "",
+  price: "",
+  tags: "",
   async mounted() {
     await axios
       .get("http://localhost:3000/category/" + this.$route.params.c_id)

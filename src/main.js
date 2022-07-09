@@ -10,7 +10,7 @@ import {
   BFormTags,
 } from "bootstrap-vue";
 // import { BFormTags } from "bootstrap-vue";
-// Vue.use("b-form-tags", BFormTags);
+Vue.use("b-form-tags", BFormTags);
 // Import Bootstrap and BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";

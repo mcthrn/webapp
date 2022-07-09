@@ -53,28 +53,12 @@
             <label>Product Price</label>
           </div>
         </div>
-        <!-- <div class="group-input">
-          <div class="group">
-            <b-form-tags input type="text" input-id="tags-basic" required>
-            </b-form-tags>
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label for="tags-basic">Product Tags</label>
-            <p class="mt-2">Value: {{ value }}</p>
-          </div>
-        </div> -->
+        <div style="width: 100%">
+          <label for="tags-basic">Type a new tag and press enter</label>
+          <b-form-tags input-id="tags-basic" v-model="value"></b-form-tags>
+          <p class="mt-2">Value: {{ value }}</p>
+        </div>
       </form>
-      <div class="row">
-        <b-form-tags
-          input-id="tags-pills"
-          v-model="value"
-          tag-variant="primary"
-          tag-pills
-          size="lg"
-          separator=" "
-          placeholder="Enter new tags separated by space"
-        ></b-form-tags>
-      </div>
     </div>
   </div>
 </template>
