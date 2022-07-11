@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <div class="product_details">
+    <div class="bcrumbs">
+      <a href="/product">Product </a> &nbsp;
+      <p>/ Product Details</p>
+    </div>
+    <!-- MODAL START -->
     <b-modal
       id="modal-1"
       title="BootstrapVue"
@@ -29,13 +34,11 @@
         <span class="bar"></span>
         <label class="g-label">Created By</label>
       </div>
-      <!-- <button class="addbtn" type="button" @click="addCategory()">
-        Add Category
-      </button> -->
     </b-modal>
+    <!-- MODAL END -->
 
-    <h2>Product Details</h2>
-    <div class="col-md-12">
+    <div class="group-content">
+      <h2>PRODUCT DETAILS</h2>
       <div class="group-container">
         <form>
           <div class="group-input">
@@ -50,7 +53,7 @@
               <input class="g-input" type="text" v-model="sku" required />
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label class="g-label">SKU</label>
+              <label class="g-label">Product SKU</label>
             </div>
           </div>
 
@@ -59,7 +62,7 @@
               <input class="g-input" type="text" v-model="desc" required />
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label class="g-label">Description</label>
+              <label class="g-label">Product Description</label>
             </div>
             <div class="group">
               <b-form-select
@@ -70,9 +73,11 @@
               ></b-form-select>
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label class="g-label">Category</label>
+              <label class="g-label">Product Category</label>
               <div class="category_modal">
-                <b-button v-b-modal.modal-1>Add New Category?</b-button>
+                <b-button v-b-modal.modal-1 class="modaltext"
+                  >Add New Category?</b-button
+                >
               </div>
             </div>
           </div>
@@ -99,10 +104,16 @@
               v-model="productTags"
             ></b-form-tags>
           </div>
-
-          <button class="addbtn" type="button" @click="updateTags()">
+          <b-button
+            style="margin-left: 20px"
+            variant=""
+            @click="updateProduct()"
+            class="mb-2"
+            >Update Product</b-button
+          >
+          <!-- <button class="addbtn" type="button" @click="updateProduct()">
             Update Product
-          </button>
+          </button> -->
           <!-- <div style="width: 100%">
           <label for="tags-basic">Type a new tag and press enter</label>
           <b-form-tags input-id="tags-basic" {{proddetails.tags}}></b-form-tags>
@@ -186,19 +197,42 @@ export default {
       desc: "",
       cost: "",
       price: "",
-      tags: "",
     };
   },
 
   methods: {
     //UPDATING TAGS ON PRODUCT
-    async updateTags() {
-      const result = await axios.post("http://localhost:3000/updateTags", {
+    // async updateTags() {
+    //   const result = await axios.post("http://localhost:3000/updateTags", {
+    //     p_id: this.$route.params.p_id,
+    //     tag_name: this.productTags,
+    //   });
+
+    //   console.log(result);
+    // },
+    //UPDATE PRODUCT
+    async updateProduct() {
+      // console.log(this.sku);
+      const result = await axios.post("http://localhost:3000/updateProduct", {
         p_id: this.$route.params.p_id,
         tag_name: this.productTags,
+        name: this.name,
+        sku: this.sku,
+        desc: this.desc,
+        cost: this.cost,
+        price: this.price,
+        selectedcategory: this.selectedcategory,
       });
-
-      console.log(result);
+      if (result.data == "Product Update") {
+        this.makeToast(
+          "success",
+          "Update Product",
+          "Product successfully updated."
+        );
+      } else {
+        this.makeToast("danger", "Update Product", "Product failed to update.");
+      }
+      console.warn("result", result);
     },
 
     //GETTING CATEGORY OF THE PRODUCT
@@ -214,22 +248,28 @@ export default {
     },
     //ADDING NEW CATEGORY FOR THE PRODUCT
     async addCategory() {
-      let catListValidation = [];
+      let tempValidation = [];
+
       this.category_list.forEach((e) => {
-        catListValidation.push(e.c_name);
+        tempValidation.push(e.toUpperCase());
       });
+      let ifCategoryExist = tempValidation.includes(
+        this.formcategory.name.toUpperCase()
+      );
 
-      let ifCategoryExist = catListValidation.includes(this.formcategory.name);
       if (ifCategoryExist) {
-        alert(this.formcategory.name + " already exist!");
+        this.makeToast("warning", "Add Category", "Category already exist!");
+        return;
+      }
+      if (this.formcategory.name == "" || this.formcategory.createdby == "") {
+        this.makeToast(
+          "warning",
+          "Add Category",
+          "Category name and created by are required!"
+        );
         return;
       }
 
-      if (this.formcategory.name == "" || this.formcategory.createdby == "") {
-        alert("Category name and created by are required!");
-        return;
-      }
-      console.log(this.formcategory);
       const result = await axios.post("http://localhost:3000/category", {
         c_name: this.formcategory.name,
         c_createdby: this.formcategory.createdby,
@@ -240,6 +280,7 @@ export default {
         await this.getCategory();
 
         this.selectedcategory = this.formcategory.name;
+        await this.updateProduct();
       }
 
       // console.warn("result", result);
@@ -247,26 +288,17 @@ export default {
     formatDates(date) {
       return moment(date).format("MMMM D,  YYYY");
     },
-    async updateProduct() {
-      console.log(this.formproduct);
-      const result = await axios.post("http://localhost:3000/product", {
-        p_sku: this.formproduct.sku,
-        p_name: this.formproduct.name,
-        p_description: this.formproduct.description,
-        p_category: this.formproduct.category,
-        p_cost: this.formproduct.cost,
-        p_price: this.formproduct.price,
-        p_tags: this.formproduct.tags,
+    //TOAST
+    makeToast(variant = null, title = null, message = null) {
+      this.$bvToast.toast(message, {
+        title: title,
+        variant: variant,
+        solid: true,
       });
-      if (result.data == "Insertion was successful") {
-        alert("success");
-        this.getProduct();
-      }
-      console.warn("result", result);
     },
   }, //method end
 
-  //GET PRODUCT
+  //GET PRODUCT DETAILS
   async mounted() {
     await axios
       .get("http://localhost:3000/product/" + this.$route.params.p_id)
@@ -297,21 +329,29 @@ export default {
 <style scoped>
 * {
   box-sizing: border-box;
+  font-family: "Roboto";
 }
 
 /* basic stylings ------------------------------------------ */
 body {
   background: url(https://scotch.io/wp-content/uploads/2014/07/61.jpg);
 }
-.group-input {
-  display: inline-flex;
+.modaltext,
+.modaltext:hover {
+  text-decoration: underline;
+}
+.product_details {
+  margin-left: 250px;
+}
+.product_details h2 {
+  margin: 0px 0px 50px 20px;
 }
 .group-container {
-  font-family: "Roboto";
   width: 600px;
-  margin: 30px auto 0;
   background: #fff;
-  padding: 10px 50px 50px;
+}
+.group-input {
+  display: inline-flex;
 }
 /* form starting stylings ------------------------------- */
 .group {
@@ -363,14 +403,14 @@ body {
 .g-input:valid ~ .g-label {
   top: -20px;
   font-size: 14px;
-  color: #5264ae;
+  color: #2c91fd;
 }
 
 .select-category:focus ~ .g-label,
 .select-category:valid ~ .g-label {
   top: -20px;
   font-size: 14px;
-  color: #5264ae;
+  color: #2c91fd;
 }
 
 /* BOTTOM BARS ================================= */
@@ -436,22 +476,10 @@ body {
 .category_modal .btn {
   padding: 5px 0 0 0;
   color: black;
-  background: transparent;
   border: none;
   text-align: left;
   display: block;
-}
-.addbtn {
-  background: transparent;
-  height: 40px;
-  padding: 0 10px 0 10px;
-  border: 1px solid #5264ae;
-  color: #5264ae;
-}
-.addbtn:hover {
-  background: #5264ae;
-  color: white;
-  transition: 0.1s ease all;
+  background-color: transparent !important;
 }
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
@@ -480,5 +508,41 @@ body {
     width: 0;
     background: transparent;
   }
+}
+.badge-secondary {
+  background-color: #2c91fd !important;
+}
+.btn-secondary {
+  color: #2c91fd !important;
+  border: 1px solid rgb(212, 212, 212);
+  position: relative;
+  margin: auto;
+  background: white;
+}
+.btn-secondary:hover {
+  color: rgb(29, 29, 29) !important;
+  border: 1px solid #2c91fd;
+  position: relative;
+  margin: auto;
+  background: white;
+}
+/* BREADCRUMBS */
+.bcrumbs {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 50px;
+}
+.bcrumbs p {
+  margin: 0;
+  padding: 0;
+  color: #2c91fd;
+}
+.bcrumbs a {
+  color: black;
+}
+.bcrumbs a:hover {
+  color: #2c91fd;
 }
 </style>

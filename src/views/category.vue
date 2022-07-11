@@ -1,43 +1,144 @@
 <template>
   <div>
-    <b-col lg="6" class="my-1">
-      <!-- FILTER START -->
-      <b-input-group size="sm">
-        <b-form-input
-          id="filter-input"
-          v-model="filter"
-          type="search"
-          placeholder="Type to Search"
-        ></b-form-input>
-      </b-input-group>
-    </b-col>
-    <!-- FILTER END -->
+    <!-- START -->
 
-    <!-- TABLE -->
-    <b-table
-      id="category-table"
-      :fields="category_fields"
-      :items="category_data"
-      label-sort-asc=""
-      label-sort-desc=""
-      label-sort-clear=""
-      :filter="filter"
-      :filter-included-fields="filterOn"
-      hover
-      :per-page="perPage"
-      :current-page="currentPage"
-      @filtered="onFiltered"
-    >
-      <!-- template - to modify yung data ng column -->
-      <template #cell(c_createddate)="data">
-        <p>{{ formatDates(data.item.c_createddate) }}</p>
-      </template>
-      <template #cell(view_details)="data">
-        <b-button :to="'/categoryDetails/' + data.item.c_id">
-          View Details</b-button
+    <b-row>
+      <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Sort"
+          label-for="sort-by-select"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+          v-slot="{ ariaDescribedby }"
         >
-      </template>
-    </b-table>
+          <b-input-group size="sm" class="m-0">
+            <b-form-select
+              id="sort-by-select"
+              v-model="sortBy"
+              :options="sortOptions"
+              :aria-describedby="ariaDescribedby"
+              class="w-25"
+            >
+              <template #first>
+                <option value="">-- none --</option>
+              </template>
+            </b-form-select>
+
+            <b-form-select
+              style="width: 2vw !important"
+              v-model="sortDesc"
+              :disabled="!sortBy"
+              :aria-describedby="ariaDescribedby"
+              size="sm"
+            >
+              <option :value="false">Asc</option>
+              <option :value="true">Desc</option>
+            </b-form-select>
+          </b-input-group>
+        </b-form-group>
+      </b-col>
+
+      <!-- <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Initial sort"
+          label-for="initial-sort-select"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >  <b-form-select
+            id="initial-sort-select"
+            v-model="sortDirection"
+            :options="['asc', 'desc', 'last']"
+            size="sm"
+          ></b-form-select> -->
+
+      <br />
+      <!-- FILTER -->
+      <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Filter"
+          label-for="filter-input"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+          <b-input-group size="sm" style="width: 15vw">
+            <b-form-input
+              class="m-0"
+              id="filter-input"
+              v-model="filter"
+              type="search"
+              placeholder="Type to Search"
+            ></b-form-input>
+          </b-input-group>
+        </b-form-group>
+      </b-col>
+      <br />
+      <!-- PAGINATION -->
+      <b-col sm="5" md="6" class="my-1">
+        <b-form-group
+          label="Per page"
+          label-for="per-page-select"
+          label-cols-sm="6"
+          label-cols-md="4"
+          label-cols-lg="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+          <b-form-select
+            style="width: 10vw"
+            class="selectpage"
+            id="per-page-select"
+            v-model="perPage"
+            :options="pageOptions"
+            size="sm"
+          ></b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <!-- FILTER END -->
+    <!-- TABLE -->
+    <div class="col-md-12">
+      <b-table
+        id="category-table"
+        :fields="category_fields"
+        :items="category_data"
+        :current-page="currentPage"
+        :per-page="perPage"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :sort-direction="sortDirection"
+        :filter="filter"
+        :filter-included-fields="filterOn"
+        hover
+        @filtered="onFiltered"
+      >
+        <!-- template - to modify yung data ng column -->
+        <template #cell(view_details)="data">
+          <b-button :to="'/categoryDetails/' + data.item.c_id">
+            View Details</b-button
+          >
+        </template>
+      </b-table>
+    </div>
+    <center>
+      <b-col>
+        <b-pagination
+          style="width: 10vw; margin-left: -200px"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          :per-page="perPage"
+          align="fill"
+          size="sm"
+        ></b-pagination>
+      </b-col>
+    </center>
+    <!--  ADD CATEGORY
     <h1>Add Category</h1>
     <div class="group-container">
       <div class="group-input">
@@ -69,7 +170,7 @@
         </button>
       </div>
     </div>
-    <!--END DIV OF ADD-->
+    END DIV OF ADD-->
   </div>
 </template>
 
@@ -87,17 +188,26 @@ export default {
       category_data: [],
       filter: null,
       filterOn: [],
+      currentPage: 1,
+      totalRows: 0,
+      perPage: 5,
+      pageOptions: [5, 10, 15, { value: 100, text: "Show a lot" }],
+      sortBy: "",
+      sortDesc: false,
+      sortDirection: "asc",
+      filterByFormatted: true,
       category_fields: [
-        {
-          key: "c_id",
-          label: "ID",
-          sortable: true,
-          filterByFormatted: true,
-        },
+        // {
+        //   key: "c_id",
+        //   label: "ID",
+        //   sortable: true,
+        //   filterByFormatted: true,
+        // },
         {
           key: "c_name",
           label: "Category Name",
           sortable: true,
+          filterByFormatted: true,
         },
         {
           key: "c_createdby",
@@ -114,8 +224,6 @@ export default {
         {
           key: "view_details",
           label: "View Details",
-          sortable: true,
-          filterByFormatted: true,
         },
 
         // { key: 'name', label: 'Person full name', sortable: true, sortDirection: 'desc' },
@@ -123,12 +231,25 @@ export default {
       // TABLE VARIABLES END
     };
   },
-  methods: {
-    viewDetails(a) {
-      console.log(a);
+  computed: {
+    sortOptions() {
+      // Create an options list from our fields
+      return this.category_fields
+        .filter((f) => f.sortable)
+        .map((f) => {
+          return { text: f.label, value: f.key };
+        });
     },
+  },
+  async mounted() {
+    // Set the initial number of items
+    await this.getCategory();
+    this.totalRows = this.category_data.length;
+  },
+  methods: {
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
+      console.log(filteredItems);
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
@@ -136,8 +257,17 @@ export default {
       await axios
         .get("http://localhost:3000/category")
         .then(async (response) => {
-          console.table(response);
-          this.category_data = response.data;
+          console.log(response.data);
+          response.data.forEach((e) => {
+            // for date convertion
+            this.category_data.push({
+              c_id: e.c_id,
+              c_name: e.c_name,
+              c_createdby: e.c_createdby,
+              c_createddate: this.formatDates(e.c_createddate),
+            });
+          });
+          // this.category_data = response.data;
         })
         .catch(async (response) => {});
     },
@@ -148,6 +278,7 @@ export default {
       });
 
       let ifCategoryExist = catListValidation.includes(this.formcategory.name);
+
       if (ifCategoryExist) {
         alert(this.formcategory.name + " already exist!");
         return;
@@ -169,14 +300,13 @@ export default {
       return moment(date).format("MMMM D,  YYYY");
     },
   },
-  created() {
-    this.getCategory();
-  },
+  created() {},
 };
 </script>
 <style scoped>
 * {
   box-sizing: border-box;
+  margin-left: 100px;
 }
 
 /* basic stylings ------------------------------------------ */
@@ -306,6 +436,7 @@ body {
   color: white;
   transition: 0.1s ease all;
 }
+/*b-table* */
 
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
@@ -334,5 +465,27 @@ body {
     width: 0;
     background: transparent;
   }
+}
+.btn-secondary {
+  color: #2c91fd !important;
+  border: 1px solid rgb(212, 212, 212);
+  position: relative;
+  margin: auto;
+  width: 120px;
+  background: white;
+}
+.btn-secondary:hover {
+  color: rgb(29, 29, 29) !important;
+  border: 1px solid #2c91fd;
+  position: relative;
+  margin: auto;
+  width: 120px;
+  background: white;
+}
+.b-table {
+  width: 80%;
+  margin-top: 50px;
+  border: 1px solid rgb(212, 212, 212);
+  text-align: left;
 }
 </style>

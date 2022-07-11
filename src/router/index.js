@@ -4,6 +4,8 @@ import category from "../views/category.vue";
 import product from "../views/product.vue";
 import categoryDetails from "../views/categoryDetails.vue";
 import productDetails from "../views/productDetails.vue";
+import dashboard from "../views/dashboard.vue";
+import table from "../views/table.vue";
 
 import test from "../views/test.vue";
 
@@ -11,7 +13,7 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
+    path: "/category",
     name: "category",
     component: category,
   },
@@ -34,6 +36,16 @@ const routes = [
     path: "/productDetails/:p_id",
     name: "productDetails",
     component: productDetails,
+  },
+  {
+    path: "/table",
+    name: "table",
+    component: table,
+  },
+  {
+    path: "/dashboard",
+    name: "dashboard",
+    component: dashboard,
   },
 ];
 

@@ -1,99 +1,147 @@
 <template>
   <div>
-    <!-- <div class="form">
-      <input type="text" placeholder="SKU" v-model="formproduct.sku" />
-      <input type="text" placeholder="Name" v-model="formproduct.name" />
-      <input
-        type="text"
-        placeholder="description"
-        v-model="formproduct.description"
-      />
-      <label for="">Category:</label>
-
-      <b-form-select
-        id=""
-        :options="category_list"
-        v-model="formproduct.category"
-        required
-      ></b-form-select>
-
-      <input type="text" placeholder="cost" v-model="formproduct.cost" />
-      <input type="text" placeholder="price" v-model="formproduct.price" />
-      <input type="text" placeholder="tags" v-model="formproduct.tags" />
-      <button type="button" @click="addProduct()">Add Category</button>
-    </div> -->
-    <!-- <table border="1">
-      <tr>
-        <td>ID</td>
-        <td>SKU</td>
-        <td>Name</td>
-        <td>description</td>
-        <td>category</td>
-        <td>cost</td>
-        <td>price</td>
-
-        <td>Actions</td>
-      </tr>
-      <tr v-for="prod in product" :key="prod.p_id">
-        <td>{{ prod.p_id }}</td>
-        <td>{{ prod.p_SKU }}</td>
-        <td>{{ prod.p_name }}</td>
-        <td>{{ prod.p_description }}</td>
-        <td>{{ prod.p_category }}</td>
-        <td>{{ prod.p_cost }}</td>
-        <td>{{ prod.p_price }}</td>
-        <td>{{ prod.p_tags }}</td>
-        <td>
-          <router-link :to="'productDetails/' + prod.p_id">View</router-link>
-        </td>
-      </tr>
-    </table> -->
-
-    <!-- // -->
     <!-- FILTER START -->
-    <b-col lg="6" class="my-1">
-      <b-form-group
-        label="Filter"
-        label-for="filter-input"
-        label-cols-sm="3"
-        label-align-sm="right"
-        label-size="sm"
-        class="mb-0"
-      >
-        <b-input-group size="sm">
-          <b-form-input
-            id="filter-input"
-            v-model="filter"
-            type="search"
-            placeholder="Type to Search"
-          ></b-form-input>
-        </b-input-group>
-      </b-form-group>
-    </b-col>
-    <!-- FILTER END -->
-    <b-table
-      id="product-table"
-      :fields="product_fields"
-      :items="product_data"
-      label-sort-asc=""
-      label-sort-desc=""
-      label-sort-clear=""
-      :filter="filter"
-      :filter-included-fields="filterOn"
-      hover
-      :per-page="perPage"
-      :current-page="currentPage"
-      @filtered="onFiltered"
-    >
-      <!-- template - to modify yung data ng column -->
-
-      <template #cell(view_details)="data">
-        <b-button :to="'/productDetails/' + data.item.p_id">
-          View Details</b-button
+    <b-row>
+      <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Sort"
+          label-for="sort-by-select"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+          v-slot="{ ariaDescribedby }"
         >
-      </template>
-    </b-table>
-    <!-- ADD -->
+          <b-input-group size="sm" class="m-0">
+            <b-form-select
+              id="sort-by-select"
+              v-model="sortBy"
+              :options="sortOptions"
+              :aria-describedby="ariaDescribedby"
+              class="w-25"
+            >
+              <template #first>
+                <option value="">-- none --</option>
+              </template>
+            </b-form-select>
+
+            <b-form-select
+              style="width: 2vw !important"
+              v-model="sortDesc"
+              :disabled="!sortBy"
+              :aria-describedby="ariaDescribedby"
+              size="sm"
+            >
+              <option :value="false">Asc</option>
+              <option :value="true">Desc</option>
+            </b-form-select>
+          </b-input-group>
+        </b-form-group>
+      </b-col>
+
+      <!-- <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Initial sort"
+          label-for="initial-sort-select"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >  <b-form-select
+            id="initial-sort-select"
+            v-model="sortDirection"
+            :options="['asc', 'desc', 'last']"
+            size="sm"
+          ></b-form-select> -->
+
+      <br />
+      <!-- FILTER -->
+      <b-col lg="6" class="my-1">
+        <b-form-group
+          label="Filter"
+          label-for="filter-input"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+          <b-input-group size="sm" style="width: 15vw">
+            <b-form-input
+              class="m-0"
+              id="filter-input"
+              v-model="filter"
+              type="search"
+              placeholder="Type to Search"
+            ></b-form-input>
+          </b-input-group>
+        </b-form-group>
+      </b-col>
+      <br />
+      <!-- PAGINATION -->
+      <b-col sm="5" md="6" class="my-1">
+        <b-form-group
+          label="Per page"
+          label-for="per-page-select"
+          label-cols-sm="6"
+          label-cols-md="4"
+          label-cols-lg="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+          <b-form-select
+            style="width: 10vw"
+            class="selectpage"
+            id="per-page-select"
+            v-model="perPage"
+            :options="pageOptions"
+            size="sm"
+          ></b-form-select>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <!-- FILTER END -->
+
+    <div class="col-md-12">
+      <b-table
+        class="b-table"
+        id="product-table"
+        responsive="true"
+        :fields="product_fields"
+        :items="product_data"
+        :current-page="currentPage"
+        :per-page="perPage"
+        label-sort-asc=""
+        label-sort-desc=""
+        label-sort-clear=""
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :sort-direction="sortDirection"
+        :filter="filter"
+        :filter-included-fields="filterOn"
+        hover
+      >
+        <!-- template - to modify yung data ng column -->
+        <template #cell(view_details)="data">
+          <b-button :to="'/productDetails/' + data.item.p_id">
+            View Details</b-button
+          >
+        </template>
+      </b-table>
+    </div>
+    <center>
+      <b-col>
+        <b-pagination
+          style="width: 10vw; margin-left: -200px"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          :per-page="perPage"
+          align="fill"
+          size="sm"
+        ></b-pagination>
+      </b-col>
+    </center>
+    <!--ADD
     <h1>Add Product</h1>
     <div class="group-container">
       <form>
@@ -145,12 +193,6 @@
             <span class="highlight"></span>
             <span class="bar"></span>
             <label class="g-label">Category</label>
-            <!-- <div class="category_modal">
-              <b-button v-b-modal.modal-1>Add New Category?</b-button>
-              <b-modal id="modal-1" title="BootstrapVue">
-                <p class="my-4">Hello from modal!</p>
-              </b-modal>
-            </div> -->
           </div>
         </div>
 
@@ -180,19 +222,14 @@
           </div>
         </div>
         <div class="group">
-          <button class="addbtn" type="button" @click="addProduct()">
-            Add Product
-          </button>
+          <b-button variant="success" @click="addProduct()" class="mb-2"
+            >Success</b-button
+          >
         </div>
-        <!-- <div style="width: 100%">
-          <label for="tags-basic">Type a new tag and press enter</label>
-          <b-form-tags input-id="tags-basic" {{proddetails.tags}}></b-form-tags>
-          <p class="mt-2">Value: {{ proddetails.tags }}</p>
-        </div> -->
       </form>
     </div>
 
-    <!--END DIV OF ADD-->
+    END DIV OF ADD-->
   </div>
 </template>
 
@@ -213,19 +250,35 @@ export default {
       },
       category_list: [],
       product_data: [],
+      sortBy: "",
+      sortDesc: false,
+      sortDirection: "asc",
       filter: null,
       filterOn: [],
+      filterByFormatted: true,
+      totalRows: 1,
+      currentPage: 1,
+      perPage: 5,
+      pageOptions: [5, 10, 15, { value: 100, text: "Show a lot" }],
       product_fields: [
+        // {
+        //   key: "p_id",
+        //   label: "ID",
+        //   sortable: true,
+        //   filterByFormatted: true,
+        // },
+        // {
+        //   key: "p_sku",
+        //   label: "SKU",
+        //   sortable: true,
+        //   filterByFormatted: true,
+        // },
         {
-          key: "p_id",
-          label: "ID",
-          filterByFormatted: true,
-        },
-        {
-          key: "p_sku",
-          label: "SKU",
+          key: "c_name",
+          label: "Category",
           sortable: true,
           filterByFormatted: true,
+          sortByFormatted: true,
         },
         {
           key: "p_name",
@@ -239,12 +292,7 @@ export default {
           sortable: true,
           filterByFormatted: true,
         },
-        {
-          key: "p_category",
-          label: "Category",
-          sortable: true,
-          filterByFormatted: true,
-        },
+
         {
           key: "p_cost",
           label: "Cost",
@@ -257,23 +305,41 @@ export default {
           sortable: true,
           filterByFormatted: true,
         },
-        {
-          key: "p_tags",
-          label: "Tags",
-          sortable: true,
-          filterByFormatted: true,
-        },
+        // {
+        //   key: "p_tags",
+        //   label: "Tags",
+        //   sortable: true,
+        //   filterByFormatted: true,
+        // },
         {
           key: "view_details",
           label: "View Details",
-          sortable: true,
-          filterByFormatted: true,
         },
       ],
     };
   },
-
+  computed: {
+    sortOptions() {
+      // Create an options list from our fields
+      return this.product_fields
+        .filter((f) => f.sortable)
+        .map((f) => {
+          return { text: f.label, value: f.key };
+        });
+    },
+  },
+  async mounted() {
+    await this.getProduct();
+    this.totalRows = this.product_data.length;
+  },
   methods: {
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      console.log(filteredItems);
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
+    },
+    // GET CATEGORY
     async getCategory() {
       await axios
         .get("http://localhost:3000/category")
@@ -305,12 +371,29 @@ export default {
         p_tags: this.formproduct.tags,
       });
       if (result.data == "Insertion was successful") {
-        alert("success");
+        this.makeToast("success", "Add Product", "Product successfully added.");
+        this.formproduct.sku = "";
+        this.formproduct.name = "";
+        this.formproduct.description = "";
+        this.formproduct.category = "";
+        this.formproduct.cost = "";
+        this.formproduct.price = "";
+        this.formproduct.tags = "";
         this.getProduct();
+      } else {
+        this.makeToast("danger", "Add Product", "Product failed to add.");
       }
       console.warn("result", result);
     },
-  },
+    //TOAST
+    makeToast(variant = null, title = null, message = null) {
+      this.$bvToast.toast(message, {
+        title: title,
+        variant: variant,
+        solid: true,
+      });
+    },
+  }, //METHOD END
 
   created() {
     this.getProduct();
@@ -321,7 +404,9 @@ export default {
 <style scoped>
 * {
   box-sizing: border-box;
+  margin-left: 100px;
 }
+/* modified td */
 
 /* basic stylings ------------------------------------------ */
 body {
@@ -483,6 +568,7 @@ body {
   color: white;
   transition: 0.1s ease all;
 }
+/*b-table* */
 
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
@@ -511,5 +597,27 @@ body {
     width: 0;
     background: transparent;
   }
+}
+.btn-secondary {
+  color: #007bff !important;
+  border: 1px solid rgb(212, 212, 212);
+  position: relative;
+  margin: auto;
+  width: 120px;
+  background: white;
+}
+.btn-secondary:hover {
+  color: rgb(29, 29, 29) !important;
+  border: 1px solid #007bff;
+  position: relative;
+  margin: auto;
+  width: 120px;
+  background: white;
+}
+.b-table {
+  width: 80%;
+  margin-top: 50px;
+  border: 1px solid rgb(212, 212, 212);
+  text-align: left;
 }
 </style>

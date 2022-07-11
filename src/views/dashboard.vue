@@ -1,31 +1,29 @@
 <template>
-  <div id="app">
-    <!-- <nav>
-      <router-link to="/">Category</router-link> |
-      <router-link to="/product">Product</router-link>
-    </nav> -->
-    <div class="wrapper">
-      <div class="sidebar">
-        <h2>WEB APP</h2>
-        <ul>
-          <li>
-            <a href="/category" to="/">Category</a>
-          </li>
-          <li>
-            <a href="/product">Product</a>
-          </li>
-          <!--  -->
-        </ul>
-      </div>
-      <div class="main_content">
-        <div class="header">Welcome!! Have a nice day.</div>
-        <div class="info">
-          <!-- <div class="table">Category:</div>
-          <div class="table">Product</div> -->
-        </div>
+  <div class="wrapper">
+    <div class="sidebar">
+      <h2>Sidebar</h2>
+      <ul>
+        <li>
+          <a href="/" to="/"><i class="fas fa-home"></i>Category</a>
+        </li>
+        <li>
+          <a href="/product"><i class="fas fa-user"></i>Product</a>
+        </li>
+        <!--  -->
+      </ul>
+      <div class="social_media">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
-    <router-view />
+    <div class="main_content">
+      <div class="header">Welcome!! Have a nice day.</div>
+      <div class="info">
+        <div class="table">Category:</div>
+        <div class="table">Product</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,7 +36,7 @@
   box-sizing: border-box;
   list-style: none;
   text-decoration: none;
-  overflow: hidden;
+  font-family: "Josefin Sans", sans-serif;
 }
 
 body {
@@ -53,14 +51,13 @@ body {
 .wrapper .sidebar {
   width: 200px;
   height: 100%;
-  background: #ffffff;
+  background: #4b4276;
   padding: 30px 0px;
   position: fixed;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .wrapper .sidebar h2 {
-  color: #000;
+  color: #fff;
   text-transform: uppercase;
   text-align: center;
   margin-bottom: 30px;
@@ -68,13 +65,13 @@ body {
 
 .wrapper .sidebar ul li {
   padding: 15px;
-  border-bottom: 1px solid #1281f8;
+  border-bottom: 1px solid #bdb8d7;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .wrapper .sidebar ul li a {
-  color: black;
+  color: #bdb8d7;
   display: block;
 }
 
@@ -83,15 +80,13 @@ body {
 }
 
 .wrapper .sidebar ul li:hover {
-  background-color: rgb(243, 243, 243);
+  background-color: #594f8d;
 }
 
 .wrapper .sidebar ul li:hover a {
-  color: #1281f8;
+  color: #fff;
 }
-.wrapper .sidebar ul li a .active {
-  color: #1281f8;
-}
+
 .wrapper .sidebar .social_media {
   position: absolute;
   bottom: 0;
@@ -146,26 +141,3 @@ body {
   }
 }
 </style>
-
-<!-- <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style> -->
