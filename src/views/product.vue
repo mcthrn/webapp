@@ -141,95 +141,6 @@
         ></b-pagination>
       </b-col>
     </center>
-    <!--ADD
-    <h1>Add Product</h1>
-    <div class="group-container">
-      <form>
-        <div class="group-input">
-          <div class="group">
-            <input
-              class="g-input"
-              type="text"
-              v-model="formproduct.name"
-              required
-            />
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">Product Name</label>
-          </div>
-
-          <div class="group">
-            <input
-              class="g-input"
-              type="text"
-              v-model="formproduct.sku"
-              required
-            />
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">SKU</label>
-          </div>
-        </div>
-
-        <div class="group-input">
-          <div class="group">
-            <input
-              class="g-input"
-              type="text"
-              v-model="formproduct.description"
-              required
-            />
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">Description</label>
-          </div>
-          <div class="group">
-            <b-form-select
-              class="select-category"
-              v-model="formproduct.category"
-              :options="category_list"
-              required
-            ></b-form-select>
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">Category</label>
-          </div>
-        </div>
-
-        <div class="group-input">
-          <div class="group">
-            <input
-              class="g-input"
-              type="number"
-              v-model="formproduct.cost"
-              required
-            />
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">Product Cost</label>
-          </div>
-
-          <div class="group">
-            <input
-              class="g-input"
-              type="number"
-              v-model="formproduct.price"
-              required
-            />
-            <span class="highlight"></span>
-            <span class="bar"></span>
-            <label class="g-label">Product Price</label>
-          </div>
-        </div>
-        <div class="group">
-          <b-button variant="success" @click="addProduct()" class="mb-2"
-            >Success</b-button
-          >
-        </div>
-      </form>
-    </div>
-
-    END DIV OF ADD-->
   </div>
 </template>
 
@@ -239,15 +150,6 @@ export default {
   data() {
     return {
       show: true,
-      formproduct: {
-        sku: "",
-        name: "",
-        description: "",
-        category: "",
-        cost: "",
-        price: "",
-        tags: "",
-      },
       category_list: [],
       product_data: [],
       sortBy: "",
@@ -255,34 +157,21 @@ export default {
       sortDirection: "asc",
       filter: null,
       filterOn: [],
-      filterByFormatted: true,
       totalRows: 1,
       currentPage: 1,
       perPage: 5,
       pageOptions: [5, 10, 15, { value: 100, text: "Show a lot" }],
       product_fields: [
-        // {
-        //   key: "p_id",
-        //   label: "ID",
-        //   sortable: true,
-        //   filterByFormatted: true,
-        // },
-        // {
-        //   key: "p_sku",
-        //   label: "SKU",
-        //   sortable: true,
-        //   filterByFormatted: true,
-        // },
         {
           key: "c_name",
-          label: "Category",
+          label: "Category Name",
           sortable: true,
           filterByFormatted: true,
           sortByFormatted: true,
         },
         {
           key: "p_name",
-          label: "Name",
+          label: "Product Name",
           sortable: true,
           filterByFormatted: true,
         },
@@ -305,12 +194,6 @@ export default {
           sortable: true,
           filterByFormatted: true,
         },
-        // {
-        //   key: "p_tags",
-        //   label: "Tags",
-        //   sortable: true,
-        //   filterByFormatted: true,
-        // },
         {
           key: "view_details",
           label: "View Details",
@@ -358,32 +241,6 @@ export default {
           this.product_data = response.data;
         })
         .catch(async (response) => {});
-    },
-    async addProduct() {
-      console.log(this.formproduct);
-      const result = await axios.post("http://localhost:3000/product", {
-        p_sku: this.formproduct.sku,
-        p_name: this.formproduct.name,
-        p_description: this.formproduct.description,
-        p_category: this.formproduct.category,
-        p_cost: this.formproduct.cost,
-        p_price: this.formproduct.price,
-        p_tags: this.formproduct.tags,
-      });
-      if (result.data == "Insertion was successful") {
-        this.makeToast("success", "Add Product", "Product successfully added.");
-        this.formproduct.sku = "";
-        this.formproduct.name = "";
-        this.formproduct.description = "";
-        this.formproduct.category = "";
-        this.formproduct.cost = "";
-        this.formproduct.price = "";
-        this.formproduct.tags = "";
-        this.getProduct();
-      } else {
-        this.makeToast("danger", "Add Product", "Product failed to add.");
-      }
-      console.warn("result", result);
     },
     //TOAST
     makeToast(variant = null, title = null, message = null) {

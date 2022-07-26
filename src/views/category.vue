@@ -3,6 +3,7 @@
     <!-- START -->
 
     <b-row>
+      <!-- SORT -->
       <b-col lg="6" class="my-1">
         <b-form-group
           label="Sort"
@@ -39,21 +40,6 @@
           </b-input-group>
         </b-form-group>
       </b-col>
-
-      <!-- <b-col lg="6" class="my-1">
-        <b-form-group
-          label="Initial sort"
-          label-for="initial-sort-select"
-          label-cols-sm="3"
-          label-align-sm="right"
-          label-size="sm"
-          class="mb-0"
-        >  <b-form-select
-            id="initial-sort-select"
-            v-model="sortDirection"
-            :options="['asc', 'desc', 'last']"
-            size="sm"
-          ></b-form-select> -->
 
       <br />
       <!-- FILTER -->
@@ -138,39 +124,6 @@
         ></b-pagination>
       </b-col>
     </center>
-    <!--  ADD CATEGORY
-    <h1>Add Category</h1>
-    <div class="group-container">
-      <div class="group-input">
-        <div class="group">
-          <input
-            class="g-input"
-            type="text"
-            v-model="formcategory.name"
-            required
-          />
-          <span class="highlight"></span>
-          <span class="bar"></span>
-          <label class="g-label">Category Name</label>
-        </div>
-
-        <div class="group">
-          <input
-            class="g-input"
-            type="text"
-            v-model="formcategory.createdby"
-            required
-          />
-          <span class="highlight"></span>
-          <span class="bar"></span>
-          <label class="g-label">Created By</label>
-        </div>
-        <button class="addbtn" type="button" @click="addCategory()">
-          Add Category
-        </button>
-      </div>
-    </div>
-    END DIV OF ADD-->
   </div>
 </template>
 
@@ -180,10 +133,6 @@ import moment from "moment";
 export default {
   data() {
     return {
-      formcategory: {
-        name: "",
-        createdby: "",
-      },
       // TABLE VARIABLES START
       category_data: [],
       filter: null,
@@ -196,44 +145,34 @@ export default {
       sortDesc: false,
       sortDirection: "asc",
       filterByFormatted: true,
+      sortable: true,
       category_fields: [
-        // {
-        //   key: "c_id",
-        //   label: "ID",
-        //   sortable: true,
-        //   filterByFormatted: true,
-        // },
         {
           key: "c_name",
           label: "Category Name",
           sortable: true,
-          filterByFormatted: true,
         },
         {
           key: "c_createdby",
           label: "Created By",
           sortable: true,
-          filterByFormatted: true,
         },
         {
           key: "c_createddate",
           label: "Created Date",
           sortable: true,
-          filterByFormatted: true,
         },
         {
           key: "view_details",
           label: "View Details",
         },
-
-        // { key: 'name', label: 'Person full name', sortable: true, sortDirection: 'desc' },
       ],
       // TABLE VARIABLES END
     };
   },
   computed: {
     sortOptions() {
-      // Create an options list from our fields
+      // Create an options list from our fields; for sort
       return this.category_fields
         .filter((f) => f.sortable)
         .map((f) => {
@@ -242,7 +181,7 @@ export default {
     },
   },
   async mounted() {
-    // Set the initial number of items
+    // Set the initial number of items; for pagination
     await this.getCategory();
     this.totalRows = this.category_data.length;
   },
@@ -259,7 +198,6 @@ export default {
         .then(async (response) => {
           console.log(response.data);
           response.data.forEach((e) => {
-            // for date convertion
             this.category_data.push({
               c_id: e.c_id,
               c_name: e.c_name,
@@ -267,40 +205,14 @@ export default {
               c_createddate: this.formatDates(e.c_createddate),
             });
           });
-          // this.category_data = response.data;
         })
         .catch(async (response) => {});
     },
-    async addCategory() {
-      let catListValidation = [];
-      this.category_data.forEach((e) => {
-        catListValidation.push(e.c_name);
-      });
-
-      let ifCategoryExist = catListValidation.includes(this.formcategory.name);
-
-      if (ifCategoryExist) {
-        alert(this.formcategory.name + " already exist!");
-        return;
-      }
-
-      console.log(this.formcategory);
-      const result = await axios.post("http://localhost:3000/category", {
-        c_name: this.formcategory.name,
-        c_createdby: this.formcategory.createdby,
-        c_createddate: new Date(),
-      });
-      if (result.data == "Insertion was successful") {
-        this.category_data = [];
-        await this.getCategory();
-      }
-      console.warn("result", result);
-    },
+    // for date convertion
     formatDates(date) {
       return moment(date).format("MMMM D,  YYYY");
     },
   },
-  created() {},
 };
 </script>
 <style scoped>
@@ -308,8 +220,6 @@ export default {
   box-sizing: border-box;
   margin-left: 100px;
 }
-
-/* basic stylings ------------------------------------------ */
 body {
   background: url(https://scotch.io/wp-content/uploads/2014/07/61.jpg);
 }

@@ -33,6 +33,40 @@
   </div>
 </template>
 
+<script>
+import axios from "axios";
+import moment from "moment";
+export default {
+  data() {
+    return {
+      category_data: [],
+      cat_id: "",
+      cat_name: "",
+      cat_created_by: "",
+      cat_created_date: "",
+      createdby: [],
+    };
+  },
+  async mounted() {
+    await axios
+      .get("http://localhost:3000/category/" + this.$route.params.c_id)
+      .then((response) => {
+        console.warn(this.$route.params.c_id);
+        // this.category_data = response.data;
+        this.cat_id = response.data[0].c_id;
+        this.cat_name = response.data[0].c_name;
+        this.cat_created_by = response.data[0].c_createdby;
+        this.cat_created_date = moment(response.data[0].c_createddate).format(
+          "MMMM D,  YYYY"
+        );
+
+        this.console.log(this.category_data);
+      })
+      .catch((response) => {});
+  },
+};
+</script>
+
 <style scoped>
 * {
   font-family: "Roboto";
@@ -87,46 +121,3 @@
   color: #2c91fd;
 }
 </style>
-<script>
-import axios from "axios";
-import moment from "moment";
-export default {
-  data() {
-    return {
-      category_data: [],
-      cat_id: "",
-      cat_name: "",
-      cat_created_by: "",
-      cat_created_date: "",
-      createdby: [],
-      items: [
-        {
-          text: "Category",
-          href: "/category",
-        },
-        {
-          text: "Category Details",
-          active: true,
-        },
-      ],
-    };
-  },
-  async mounted() {
-    await axios
-      .get("http://localhost:3000/category/" + this.$route.params.c_id)
-      .then((response) => {
-        console.warn(this.$route.params.c_id);
-        // this.category_data = response.data;
-        this.cat_id = response.data[0].c_id;
-        this.cat_name = response.data[0].c_name;
-        this.cat_created_by = response.data[0].c_createdby;
-        this.cat_created_date = moment(response.data[0].c_createddate).format(
-          "MMMM D,  YYYY"
-        );
-
-        this.console.log(this.category_data);
-      })
-      .catch((response) => {});
-  },
-};
-</script>

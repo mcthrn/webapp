@@ -84,14 +84,14 @@
 
           <div class="group-input">
             <div class="group">
-              <input class="g-input" type="text" v-model="cost" required />
+              <input class="g-input" type="number" v-model="cost" required />
               <span class="highlight"></span>
               <span class="bar"></span>
               <label class="g-label">Product Cost</label>
             </div>
 
             <div class="group">
-              <input class="g-input" type="text" v-model="price" required />
+              <input class="g-input" type="number" v-model="price" required />
               <span class="highlight"></span>
               <span class="bar"></span>
               <label class="g-label">Product Price</label>
@@ -111,71 +111,9 @@
             class="mb-2"
             >Update Product</b-button
           >
-          <!-- <button class="addbtn" type="button" @click="updateProduct()">
-            Update Product
-          </button> -->
-          <!-- <div style="width: 100%">
-          <label for="tags-basic">Type a new tag and press enter</label>
-          <b-form-tags input-id="tags-basic" {{proddetails.tags}}></b-form-tags>
-          <p class="mt-2">Value: {{ proddetails.tags }}</p>
-        </div> -->
         </form>
       </div>
     </div>
-    <!-- <label for="">Product Name:</label>
-    <input id="" placeholder="Product Name" required />
-    <br />
-    <label for="">SKU: </label>
-    <input id="" placeholder="SKU" required />
-    <br />
-    <label for="">Description:</label>
-    <input id="" placeholder="Description" required />
-    <br />
-    <label for="">Category: </label>
-    <b-form-select id="" :options="category_list" required></b-form-select>
-
-    <div>
-      <button
-        class="btn-modal"
-        id="show-btn"
-        @click="$bvModal.show('bv-modal-example')"
-      >
-        Add new category?
-      </button>
-      ADD CATEGORY 
-      <b-modal id="bv-modal-example" hide-footer>
-        <template #modal-title> </template>
-        <div class="d-block text-center">
-          <input
-            type="text"
-            value=""
-            placeholder="Category Name"
-            v-model="formcategory.name"
-          />
-          <br />
-          <input
-            type="text"
-            value=""
-            placeholder="Created By"
-            v-model="formcategory.createdby"
-          />
-          <br />
-          <button type="button" @click="addCategory()">Add Category</button>
-        </div>
-        <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')"
-          >Close Me</b-button
-        >
-      </b-modal>
-    </div>
-    <label for="">Cost:</label>
-    <input id="" placeholder="Cost" required />
-    <br />
-    <label for="">Price:</label>
-    <input id="" placeholder="Price" required />
-    <br />
-    <label for="">Tags:</label>
-    <input id="" placeholder="Tags" required />
-  </div> -->
   </div>
 </template>
 
@@ -199,20 +137,16 @@ export default {
       price: "",
     };
   },
-
+  watch: {
+    async productTags(newvalue, oldvalue) {
+      if (newvalue != oldvalue) {
+        await this.updateTags();
+      }
+    },
+  },
   methods: {
-    //UPDATING TAGS ON PRODUCT
-    // async updateTags() {
-    //   const result = await axios.post("http://localhost:3000/updateTags", {
-    //     p_id: this.$route.params.p_id,
-    //     tag_name: this.productTags,
-    //   });
-
-    //   console.log(result);
-    // },
     //UPDATE PRODUCT
     async updateProduct() {
-      // console.log(this.sku);
       const result = await axios.post("http://localhost:3000/updateProduct", {
         p_id: this.$route.params.p_id,
         tag_name: this.productTags,
@@ -234,7 +168,23 @@ export default {
       }
       console.warn("result", result);
     },
-
+    async updateTags() {
+      // console.log(this.sku);
+      const result = await axios.post("http://localhost:3000/updateProduct", {
+        p_id: this.$route.params.p_id,
+        tag_name: this.productTags,
+        name: this.name,
+        sku: this.sku,
+        desc: this.desc,
+        cost: this.cost,
+        price: this.price,
+        selectedcategory: this.selectedcategory,
+      });
+      if (result.data == "Product Update") {
+      } else {
+      }
+      console.warn("result", result);
+    },
     //GETTING CATEGORY OF THE PRODUCT
     async getCategory() {
       await axios

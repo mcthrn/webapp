@@ -5,6 +5,7 @@ import product from "../views/product.vue";
 import categoryDetails from "../views/categoryDetails.vue";
 import productDetails from "../views/productDetails.vue";
 import dashboard from "../views/dashboard.vue";
+import prodDetails from "../views/prodDetails.vue";
 import table from "../views/table.vue";
 
 import test from "../views/test.vue";
@@ -46,6 +47,11 @@ const routes = [
     path: "/dashboard",
     name: "dashboard",
     component: dashboard,
+  },
+  {
+    path: "/prodDetails",
+    name: "prodDetails",
+    component: prodDetails,
   },
 ];
 
